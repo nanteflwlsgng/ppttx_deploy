@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useTransform, useMotionValue } from "framer-motion";
 import { Upload, Cpu, Zap, CheckCircle, BrainCircuit, LogIn, History, LogOut, RotateCcw, LayoutTemplate, Presentation, MonitorCog } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import FooterGrotesque from "./components/Footer"
 
 // --- TYPES ---
 type HistoryItem = {
@@ -386,6 +387,7 @@ export default function Home() {
         </AnimatePresence>
 
       </div>
+      <FooterGrotesque/>
     </div>
   );
 }
