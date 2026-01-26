@@ -21,7 +21,7 @@ const HyperLoader = ({ thesisText }: { thesisText: string }) => {
   
   useEffect(() => {
     const snippets = thesisText.split(" ").filter(w => w.length > 5);
-    const techWords = ["TOKENIZATION", "VECTOR_EMBEDDING", "SYNAPTIC_PARSING", "GEMINI_V1.5_LINK", "NEURAL_HANDSHAKE", "SEMANTIC_EXTRACTION"];
+    const techWords = ["TOKENIZATION", "VECTOR_EMBEDDING", "SYNAPTIC_PARSING", "NEURAL_HANDSHAKE", "SEMANTIC_EXTRACTION"];
     
     const interval = setInterval(() => {
       const randomSnippet = snippets[Math.floor(Math.random() * snippets.length)] || "DATA";
@@ -66,7 +66,9 @@ export default function Home() {
   // États Générateur
   const [step, setStep] = useState(1);
   const [thesisText, setThesisText] = useState("");
-  const [instruction, setInstruction] = useState("Analyse ce mémoire et crée une présentation percutante, moderne et structurée.");
+  const [instruction, setInstruction] = useState(
+    "Agis comme un expert académique. Analyse ce mémoire pour créer une présentation de soutenance structurée. Plan imposé : 1. Contexte & Problématique, 2. Objectifs & Hypothèses, 3. Méthodologie, 4. Résultats Majeurs (Chiffres clés), 5. Discussion, 6. Conclusion & Perspectives. Pour chaque slide, génère 4 à 6 points clés très synthétiques (style télégraphique), sans phrases longues, pour une lecture facile à l'écran."
+  );
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
   const [fileName, setFileName] = useState("");

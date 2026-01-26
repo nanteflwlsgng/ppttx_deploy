@@ -1,23 +1,31 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-// Debug rapide pour la clé
 const apiKey = process.env.GOOGLE_API_KEY;
 if (!apiKey) console.error("⚠️ Clé API Google manquante !");
 
 const genAI = new GoogleGenerativeAI(apiKey || "");
 
+// LISTE ORDONNÉE DES MODÈLES (Priorité : Stabilité > Vitesse > Intelligence brute)
+const MODELS_TO_TRY = [
+  "gemini-2.0-flash",          // Le Top actuel (Vitesse/Qualité)
+  "gemini-flash-latest",       // Le Standard (1.5 Flash) - Très fiable
+  "gemini-2.5-flash",          // Nouvelle génération Flash
+  "gemini-2.0-flash-lite",     // Fallback rapide
+  "gemini-flash-lite-latest",  // Fallback très économique
+  "gemini-2.5-flash-lite",     // Autre fallback léger
+  "gemini-3-flash-preview",    // Expérimental (Risque de 503, donc mis plus bas)
+  "gemini-2.5-pro",            // Puissant mais lent (Dernier recours)
+  "gemini-3-pro-preview"       // Expérimental Pro
+];
+
 export async function POST(req: Request) {
   try {
-    // On reçoit maintenant 'instruction' au lieu de 'plan'
     const { thesisText, instruction } = await req.json();
 
     if (!thesisText || !instruction) {
       return NextResponse.json({ error: "Manque texte ou instruction" }, { status: 400 });
     }
-
-    // Utilise un modèle récent
-    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" }); 
 
     const prompt = `
       Tu es un expert académique assistant un étudiant pour sa soutenance.
@@ -33,37 +41,52 @@ export async function POST(req: Request) {
       Si l'étudiant demande un plan spécifique, respecte-le. S'il est vague, propose une structure académique pertinente (Intro, Méthodes, Résultats, Conclusion).
       
       FORMAT DE SORTIE OBLIGATOIRE (JSON SEULEMENT) :
-      Doit être un objet JSON valide sans Markdown, avec cette structure exacte pour que le script Python fonctionne :
+      Doit être un objet JSON valide sans Markdown, avec cette structure exacte :
       {
         "slides": [
           { 
-            "titre": "Titre de la slide (ex: Introduction)", 
-            "points": ["Point clé 1", "Point clé 2 (court et percutant)"] 
-          },
-          {
-            "titre": "Titre de la slide suivante...",
-            "points": ["..."]
+            "titre": "Titre de la slide", 
+            "points": ["Point clé 1", "Point clé 2"] 
           }
         ]
       }
     `;
 
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    // --- BOUCLE DE TENTATIVE (RETRY LOGIC) ---
+    let lastError = null;
 
-    // Nettoyage JSON
-    const jsonString = responseText.replace(/```json|```/g, "").trim();
-    
-    try {
+    for (const modelName of MODELS_TO_TRY) {
+      try {
+        console.log(`🤖 Tentative avec le modèle : ${modelName}...`);
+        
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(prompt);
+        const responseText = result.response.text();
+
+        // Tentative de parsing JSON pour vérifier si la réponse est valide
+        const jsonString = responseText.replace(/```json|```/g, "").trim();
         const jsonData = JSON.parse(jsonString);
+
+        // Si on arrive ici, c'est que ça a marché !
+        console.log(`✅ SUCCÈS avec ${modelName}`);
         return NextResponse.json(jsonData);
-    } catch (e) {
-        console.error("Erreur parsing JSON IA:", jsonString);
-        return NextResponse.json({ error: "L'IA a généré un format invalide" }, { status: 500 });
+
+      } catch (error: any) {
+        console.warn(`❌ Échec avec ${modelName} :`, error.message || error);
+        lastError = error;
+        // On continue la boucle vers le modèle suivant...
+      }
     }
 
+    // Si on sort de la boucle, c'est que TOUS les modèles ont échoué
+    console.error("💀 Tous les modèles Gemini ont échoué.");
+    return NextResponse.json(
+        { error: "Service surchargé. Tous les modèles IA sont occupés. Réessayez dans 1 minute.", details: lastError?.message }, 
+        { status: 503 }
+    );
+
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Erreur serveur IA" }, { status: 500 });
+    console.error("Erreur serveur critique:", error);
+    return NextResponse.json({ error: "Erreur interne serveur" }, { status: 500 });
   }
 }
