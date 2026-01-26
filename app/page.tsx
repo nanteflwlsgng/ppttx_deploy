@@ -303,26 +303,36 @@ export default function Home() {
                     className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
                     {history.map((item, idx) => (
-                        <motion.div 
-                            key={item.id} 
-                            initial={{ opacity: 0, y: 20 }} 
-                            animate={{ opacity: 1, y: 0 }} 
-                            transition={{ delay: idx * 0.1 }}
-                            className="group relative border border-gray-200 bg-white/40 backdrop-blur-md p-6 hover:border-black transition-all cursor-default"
-                        >
-                            <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <span className="text-[10px] font-mono border border-black px-1">ID: {item.id.substring(0,4)}</span>
-                            </div>
-                            <h3 className="font-bold text-lg mb-2 truncate uppercase">{item.title}</h3>
-                            <p className="text-xs text-gray-400 font-mono mb-4">{new Date(item.created_at).toLocaleDateString()}</p>
-                            <p className="text-sm text-gray-600 line-clamp-3 mb-6 italic border-l-2 border-gray-200 pl-3">"{item.instruction}"</p>
-                            <button 
-                                onClick={() => loadFromHistory(item)}
-                                className="w-full py-3 bg-black text-white text-xs font-bold uppercase hover:bg-gray-800 flex items-center justify-center gap-2"
-                            >
-                                <RotateCcw className="w-3 h-3" /> Relancer le noyau
-                            </button>
-                        </motion.div>
+                      <motion.div 
+  key={item.id} 
+  initial={{ opacity: 0, y: 20 }} 
+  animate={{ opacity: 1, y: 0 }} 
+  transition={{ delay: idx * 0.1 }}
+  className="group relative border border-gray-200 bg-white/40 backdrop-blur-md p-6 hover:border-black transition-all cursor-default flex flex-col justify-between h-full"
+>
+  <div>
+    <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      <span className="text-[10px] font-mono border border-black px-1">
+        ID: {item.id.substring(0,4)}
+      </span>
+    </div>
+    <h3 className="font-bold text-lg mb-2 truncate uppercase">{item.title}</h3>
+    <p className="text-xs text-gray-400 font-mono mb-4">
+      {new Date(item.created_at).toLocaleDateString()}
+    </p>
+    <p className="text-sm text-gray-600 line-clamp-3 mb-6 italic border-l-2 border-gray-200 pl-3">
+      "{item.instruction}"
+    </p>
+  </div>
+
+  <button 
+    onClick={() => loadFromHistory(item)}
+    className="w-full py-3 bg-black text-white text-xs font-bold uppercase hover:bg-gray-800 flex items-center justify-center gap-2"
+  >
+    <RotateCcw className="w-3 h-3" /> Relancer le noyau
+  </button>
+</motion.div>
+
                     ))}
                     {history.length === 0 && <p className="text-gray-400 font-mono">Aucune donnée archivée dans le système.</p>}
                 </motion.div>
