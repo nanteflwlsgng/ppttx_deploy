@@ -67,7 +67,7 @@ export default function Home() {
   const [step, setStep] = useState(1);
   const [thesisText, setThesisText] = useState("");
   const [instruction, setInstruction] = useState(
-    "Agis comme un expert académique. Analyse ce mémoire pour créer une présentation de soutenance structurée. Plan imposé : 1. Contexte & Problématique, 2. Objectifs & Hypothèses, 3. Méthodologie, 4. Résultats Majeurs (Chiffres clés), 5. Discussion, 6. Conclusion & Perspectives. Pour chaque slide, génère 4 à 6 points clés très synthétiques (style télégraphique), sans phrases longues, pour une lecture facile à l'écran."
+    "Analyse ce mémoire pour créer une présentation de soutenance structurée."
   );
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
