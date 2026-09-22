@@ -1,6 +1,7 @@
 "use client";
 
 import { History, LogOut, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 interface NavbarProps {
   user: any;
@@ -84,13 +85,13 @@ export default function Navbar({
               </button>
             </div>
           ) : (
-            <button
-              onClick={onLogin}
-              className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-black text-white text-xs font-medium shadow-sm transition-all flex items-center gap-2 active:scale-95"
-            >
-              <span>Connexion</span>
-              <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
-            </button>
+<Link
+  href="/login"
+  className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-black text-white text-xs font-medium shadow-sm transition-all flex items-center gap-2 active:scale-95"
+>
+  <span>Connexion</span>
+  <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
+</Link>
           )}
         </div>
       </div>
