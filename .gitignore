@@ -22,6 +22,9 @@ venv/
 env/
 *.log
 
+*.pptx
+temp_output.pptx
+
 # --- IDE / OS ---
 .vscode/
 .idea/

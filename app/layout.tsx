@@ -1,35 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PPTX Ghost Generator", // Le titre de l'onglet
-  description: "Générateur de soutenances assisté par IA - Madagascar Edition",
-  icons: {
-    icon: '/icon.svg', 
-  },
+  title: "GhostPPTX — Présentations IA instantanées",
+  description: "Générez des présentations PowerPoint professionnelles en quelques secondes.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="fr" className="h-full">
+      <body className={`${inter.className} min-h-screen flex flex-col justify-between`}>
         {children}
       </body>
     </html>

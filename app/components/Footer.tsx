@@ -1,4 +1,4 @@
-
+"use client";
 import { motion, AnimatePresence, useTransform, useMotionValue } from "framer-motion";
 import { div } from "framer-motion/client";
 // --- COMPOSANT : MARQUEE INFINI ---
