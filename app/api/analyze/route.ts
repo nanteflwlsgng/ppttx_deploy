@@ -2,12 +2,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
 const apiKey = process.env.GOOGLE_API_KEY;
-if (!apiKey) console.error("⚠️ Clé API Google manquante !");
+if (!apiKey) console.error("Clé API Google manquante !");
 
 const genAI = new GoogleGenerativeAI(apiKey || "");
 
-// LISTE ORDONNÉE DES MODÈLES (Priorité : Stabilité > Vitesse > Intelligence brute)
-const MODELS_TO_TRY = [
+// Modèles stables
+const FAST_MODELS = [
   "gemini-3.8-flash",    
   "gemini-3.5-flash-lite",    
   "gemini-3.1-pro-preview", 
@@ -25,64 +25,69 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Manque texte ou instruction" }, { status: 400 });
     }
 
-    const prompt = `
-      Tu es un expert académique assistant un étudiant pour sa soutenance.
-      
-      CONTEXTE (EXTRAIT DU MÉMOIRE) :
-      "${thesisText.substring(0, 150000)}..." (tronqué)
-      
-      INSTRUCTION DE L'ÉTUDIANT POUR LA PRÉSENTATION :
-      "${instruction}"
-      
-      TA MISSION :
-      Analyse le mémoire et génère le contenu des slides PowerPoint en suivant scrupuleusement l'instruction de l'étudiant ci-dessus.
-      Si l'étudiant demande un plan spécifique, respecte-le. S'il est vague, propose une structure académique pertinente (Intro, Méthodes, Résultats, Conclusion).
-      
-      FORMAT DE SORTIE OBLIGATOIRE (JSON SEULEMENT) :
-      Doit être un objet JSON valide sans Markdown, avec cette structure exacte :
-      {
-        "slides": [
-          { 
-            "titre": "Titre de la slide", 
-            "points": ["Point clé 1", "Point clé 2"] 
-          }
-        ]
-      }
-    `;
+    // Troncature intelligente à 45 000 caractères (suffisant pour capturer tout le plan et le fond)
+    const cleanedText = thesisText.slice(0, 45000);
 
-    // --- BOUCLE DE TENTATIVE (RETRY LOGIC) ---
+    const prompt = `
+Tu es un expert académique assistant un étudiant pour préparer sa soutenance de mémoire.
+
+DIRECTIVES DE L'ÉTUDIANT :
+"${instruction}"
+
+EXTRAIT ANALYTIQUE DU DOCUMENT :
+"${cleanedText}"
+
+MISSION :
+Conçois une présentation PowerPoint percutante adaptée à une soutenance professionnelle.
+Pour chaque diapositive :
+- "titre" : Court, percutant et évocateur (ex: "Problématique & Enjeux", "Méthodologie retenue").
+- "points" : Liste de 3 à 5 points synthétiques, directs et sans fioritures (idéal pour la colonne de gauche).
+
+RÈGLE ABSOLUE :
+Réponds UNIQUEMENT sous forme d'un objet JSON strict respectant cette structure exacte :
+{
+  "slides": [
+    {
+      "titre": "Titre de la slide",
+      "points": ["Point clé 1", "Point clé 2", "Point clé 3"]
+    }
+  ]
+}
+`;
+
     let lastError = null;
 
-    for (const modelName of MODELS_TO_TRY) {
+    for (const modelName of FAST_MODELS) {
       try {
-        console.log(`🤖 Tentative avec le modèle : ${modelName}...`);
-        
-        const model = genAI.getGenerativeModel({ model: modelName });
+        const startTime = Date.now();
+        console.log(`⚡ Tentative accélérée avec ${modelName}...`);
+
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.3, // Moins d'hallucinations, réponse plus rapide et structurée
+          },
+        });
+
         const result = await model.generateContent(prompt);
         const responseText = result.response.text();
+        const jsonData = JSON.parse(responseText);
 
-        // Tentative de parsing JSON pour vérifier si la réponse est valide
-        const jsonString = responseText.replace(/```json|```/g, "").trim();
-        const jsonData = JSON.parse(jsonString);
+        const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+        console.log(`✅ SUCCÈS avec ${modelName} en ${duration}s !`);
 
-        // Si on arrive ici, c'est que ça a marché !
-        console.log(`✅ SUCCÈS avec ${modelName}`);
         return NextResponse.json(jsonData);
-
       } catch (error: any) {
-        console.warn(`❌ Échec avec ${modelName} :`, error.message || error);
+        console.warn(`⚠️ Échec avec ${modelName} (${error.message || error}), bascule vers le suivant...`);
         lastError = error;
-        // On continue la boucle vers le modèle suivant...
       }
     }
 
-    // Si on sort de la boucle, c'est que TOUS les modèles ont échoué
-    console.error("💀 Tous les modèles Gemini ont échoué.");
     return NextResponse.json(
-        { error: "Service surchargé. Tous les modèles IA sont occupés. Réessayez dans 1 minute.", details: lastError?.message }, 
-        { status: 503 }
+      { error: "Tous les modèles rapides sont temporairement indisponibles.", details: lastError?.message },
+      { status: 503 }
     );
-
   } catch (error) {
     console.error("Erreur serveur critique:", error);
     return NextResponse.json({ error: "Erreur interne serveur" }, { status: 500 });
