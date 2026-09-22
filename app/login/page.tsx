@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Sparkles, Cloud, ShieldCheck } from "lucide-react";
+import Footer from "../components/Footer";
 
 export default function LoginPage() {
   return (
@@ -29,7 +30,7 @@ export default function LoginPage() {
         <div className="w-full max-w-lg bg-white border border-zinc-200/80 rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-center space-y-8">
           
           {/* Badge statut */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 text-zinc-600 border border-zinc-200/80 text-xs font-medium">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 text-zinc-600 text-xs font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
             Espace Membre • Déploiement en cours
           </div>
@@ -46,7 +47,7 @@ export default function LoginPage() {
 
           {/* Ce qui arrive bientôt (Feature preview) */}
           <div className="text-left bg-zinc-50/70 border border-zinc-200/60 rounded-2xl p-5 space-y-3.5">
-            <p className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+            <p className="text-[11px] uppercase tracking-wider text-zinc-400">
               Ce que débloquera votre compte :
             </p>
 
@@ -62,7 +63,7 @@ export default function LoginPage() {
               <Sparkles className="w-4 h-4 text-zinc-700 shrink-0 mt-0.5" />
               <div>
                 <p className="text-xs font-medium text-zinc-800">Modèles personnalisés</p>
-                <p className="text-[11px] text-zinc-500">Intégrez la charte graphique et le logo de votre université ou école.</p>
+                <p className="text-[11px] text-zinc-500">Intégrez la charte graphique et le logo de votre université ou école, changer de theme, etc</p>
               </div>
             </div>
 
@@ -90,9 +91,7 @@ export default function LoginPage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-6 text-center text-xs text-zinc-400 border-t border-zinc-200/60">
-        <p>© {new Date().getFullYear()} GhostPPTX — Conçu avec rigueur et sobriété.</p>
-      </footer>
+<Footer/>
     </div>
   );
 }
