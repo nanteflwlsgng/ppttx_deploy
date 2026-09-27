@@ -38,6 +38,38 @@ type HistoryItem = {
   thesis_text: string;
 };
 
+// --- LES 4 THÈMES PROFESSIONNELS ---
+const THEMES_LIST = [
+  {
+    id: "terracotta",
+    name: "Terracotta & Crème",
+    category: "Sciences Humaines & Droit",
+    dot1: "#B84323",
+    dot2: "#F6F4F0",
+  },
+  {
+    id: "dark_modernist",
+    name: "Dark Modernist",
+    category: "Tech, IA & Ingénierie",
+    dot1: "#0F172A",
+    dot2: "#38BDF8",
+  },
+  {
+    id: "pacific_navy",
+    name: "Pacific Executive",
+    category: "Finance & Management",
+    dot1: "#0A192F",
+    dot2: "#2563EB",
+  },
+  {
+    id: "nordic_sage",
+    name: "Nordic Sage",
+    category: "Santé, RSE & Écologie",
+    dot1: "#2D3E35",
+    dot2: "#C88A58",
+  },
+];
+
 // --- COMPOSANT : STUDIO LOADER ---
 const StudioLoader = ({ fileName }: { fileName: string }) => {
   const steps = [
@@ -143,6 +175,8 @@ export default function Home() {
   const [slides, setSlides] = useState<Slide[] | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [selectedTheme, setSelectedTheme] = useState<string>("terracotta");
 
   // 1. Initialisation Auth Supabase
   useEffect(() => {
@@ -307,7 +341,7 @@ export default function Home() {
       const pptRes = await fetch("/api", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slides }),
+        body: JSON.stringify({ slides, theme: selectedTheme }),
       });
 
       if (!pptRes.ok) throw new Error(await pptRes.text());
@@ -591,6 +625,53 @@ export default function Home() {
     </p>
   </div>
 
+</div>
+
+{/* SÉLECTEUR DE THÈMES PROFESSIONNELS */}
+<div className="space-y-3">
+  <div className="flex items-center justify-between">
+    <label className="text-xs font-medium text-zinc-700 flex items-center gap-1.5">
+      <Sparkles className="w-3.5 h-3.5 text-zinc-500" />
+      <span>Ambiance graphique du PowerPoint</span>
+    </label>
+    <span className="text-[11px] text-zinc-400">Inspiré de Microsoft Create</span>
+  </div>
+
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+    {THEMES_LIST.map((theme) => {
+      const isSelected = selectedTheme === theme.id;
+      return (
+        <div
+          key={theme.id}
+          onClick={() => setSelectedTheme(theme.id)}
+          className={`p-3.5 rounded-xl border cursor-pointer transition-all flex flex-col justify-between ${
+            isSelected
+              ? "border-zinc-900 bg-zinc-900/5 shadow-xs"
+              : "border-zinc-200/80 bg-white hover:border-zinc-300"
+          }`}
+        >
+          <div className="flex items-center gap-1.5 mb-2">
+            <span
+              className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0"
+              style={{ backgroundColor: theme.dot1 }}
+            />
+            <span
+              className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0"
+              style={{ backgroundColor: theme.dot2 }}
+            />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-zinc-900 leading-tight">
+              {theme.name}
+            </p>
+            <p className="text-[10px] text-zinc-400 mt-0.5 truncate">
+              {theme.category}
+            </p>
+          </div>
+        </div>
+      );
+    })}
+  </div>
 </div>
 
                       <div className="pt-2 flex items-center justify-end">
