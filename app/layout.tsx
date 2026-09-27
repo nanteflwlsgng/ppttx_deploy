@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "GhostPPTX — Présentations IA instantanées",
+  title: "GhostPPTX présentations instantanées",
   description: "Générez des présentations PowerPoint professionnelles en quelques secondes.",
 };
 

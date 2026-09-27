@@ -579,24 +579,19 @@ export default function Home() {
                         </button>
                       </div>
 
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <label className="text-xs font-medium text-zinc-700 flex items-center gap-1.5">
-                            <Sparkles className="w-3.5 h-3.5 text-zinc-500" />
-                            <span>Directives de présentation</span>
-                          </label>
-                          <span className="text-[11px] text-zinc-400">
-                            Personnalisation du plan
-                          </span>
-                        </div>
-                        <textarea
-                          rows={4}
-                          value={instruction}
-                          onChange={(e) => setInstruction(e.target.value)}
-                          placeholder="Ex: Structure la présentation en 10 slides avec un focus sur les résultats et recommandations..."
-                          className="w-full text-xs text-zinc-800 bg-zinc-50/50 border border-zinc-200 rounded-xl p-3.5 focus:outline-none focus:ring-1 focus:ring-zinc-900 focus:bg-white transition-all resize-none leading-relaxed"
-                        />
-                      </div>
+<div className="p-6 md:p-8 space-y-6">
+  {/* Info sur le traitement automatique */}
+  <div className="p-4 rounded-xl border border-zinc-200/60 bg-white space-y-1">
+    <div className="flex items-center gap-2 text-xs font-medium text-zinc-800">
+      <Sparkles className="w-3.5 h-3.5 text-zinc-600" />
+      <span>Structuration académique automatique</span>
+    </div>
+    <p className="text-[11px] text-zinc-500 leading-relaxed">
+      L'IA extrait la méthodologie, les résultats clés et les conclusions de votre recherche pour concevoir une soutenance au format Terracotta & Crème.
+    </p>
+  </div>
+
+</div>
 
                       <div className="pt-2 flex items-center justify-end">
                         <button
